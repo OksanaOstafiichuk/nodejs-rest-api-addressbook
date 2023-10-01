@@ -14,6 +14,14 @@ router.get('/', (req, res) => {
 })
 
 router.get('/:id', (req, res) => {
+    db.query(`SELECT * FROM address WHERE id = ${req.params.id}`, (error, data) => {
+    if (!error) {
+        return res.json(data)
+    } else {
+        return res.json(error)
+    }
+})
+
 })
 
 router.post('/', (req, res) => {

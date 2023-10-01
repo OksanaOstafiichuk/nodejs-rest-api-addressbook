@@ -1,4 +1,5 @@
 const express = require('express');
+const Joi = require('joi');
 const db = require('../server');
 
 const router = express.Router();
@@ -13,6 +14,17 @@ router.get('/', (req, res) => {
     })
 })
 
+router.get('/:id', (req, res) => {
+    db.query(`SELECT * FROM users WHERE id = ${req.params.id}`, (error, data) => {
+        if (!error) {
+            return res.json(data)
+        } else {
+            return res.json(error)
+        }
+    })
+})
+
+
 router.post('/', (req, res) => {
     const query = "INSERT INTO users (`firstName`, `lastName`, `phoneNumber`, `birthday`, `image`) VALUES (?)"
     const values = [
@@ -22,7 +34,9 @@ router.post('/', (req, res) => {
         req.body.birthday,
         req.body.image
     ]
-    
+
+    if(!req.body.firstName) return res.status(404).send('User with this id not found!')
+    console.log(req.body.firstName)
     db.query(query, [values], (error, data) => {
         if (error) return res.json(error)
         return res.json('A new user has been created!')
