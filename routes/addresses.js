@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../server');
+const {bodySchema} = require('../schemas/address')
 
 const router = express.Router();
 
@@ -25,6 +26,9 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
+    const validationResult = bodySchema.validate(req.body)
+    if (validationResult.error) return res.status(400).send(validationResult.error.details[0].message)
+
     const query = "INSERT INTO address (`country`, `state`, `city`, `zipCode`, `address`) VALUES (?)"
     const values = [
         req.body.country,
@@ -41,6 +45,9 @@ router.post('/', (req, res) => {
 })
 
 router.put('/:id', (req, res) => {
+    const validationResult = bodySchema.validate(req.body)
+    if (validationResult.error) return res.status(400).send(validationResult.error.details[0].message)
+
     const userId = req.params.id;
     const query = "UPDATE address SET `country` = ?, `state` = ?, `city` = ?, `zipCode` = ?, `address` = ? WHERE id = ? "
     const values = [

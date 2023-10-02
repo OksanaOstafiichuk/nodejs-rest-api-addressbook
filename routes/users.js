@@ -1,6 +1,6 @@
 const express = require('express');
-const Joi = require('joi');
 const db = require('../server');
+const {bodySchema} = require('../schemas/user')
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/:id', (req, res) => {
-    db.query(`SELECT * FROM users WHERE id = ${req.params.id}`, (error, data) => {
+    db.query(`SELECT * FROM users WHERE id = ${userId}`, (error, data) => {
         if (!error) {
             return res.json(data)
         } else {
@@ -26,6 +26,9 @@ router.get('/:id', (req, res) => {
 
 
 router.post('/', (req, res) => {
+    const validationResult = bodySchema.validate(req.body)
+    if (validationResult.error) return res.status(400).send(validationResult.error.details[0].message)
+    
     const query = "INSERT INTO users (`firstName`, `lastName`, `phoneNumber`, `birthday`, `image`) VALUES (?)"
     const values = [
         req.body.firstName,
@@ -34,9 +37,7 @@ router.post('/', (req, res) => {
         req.body.birthday,
         req.body.image
     ]
-
-    if(!req.body.firstName) return res.status(404).send('User with this id not found!')
-    console.log(req.body.firstName)
+    
     db.query(query, [values], (error, data) => {
         if (error) return res.json(error)
         return res.json('A new user has been created!')
@@ -54,7 +55,9 @@ router.delete('/:id', (req, res) => {
 })
 
 router.put('/:id', (req, res) => {
-    const userId = req.params.id;
+    const validationResult = bodySchema.validate(req.body)
+    if (validationResult.error) return res.status(400).send(validationResult.error.details[0].message)
+    
     const query = "UPDATE users SET `firstName` = ?, `lastName` = ?, `phoneNumber` = ?, `birthday` = ?, `image` = ? WHERE id = ? "
     const values = [
         req.body.firstName,
