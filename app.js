@@ -7,6 +7,7 @@ const addressesRouters = require('./routes/addresses');
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static('public'));
 
 app.use('/users', usersRouters);
 app.use('/addresses', addressesRouters);

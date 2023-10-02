@@ -5,7 +5,7 @@ const bodySchema = Joi.object({
     lastName: Joi.string().alphanum().min(3).required(),
     phoneNumber: Joi.string().required(),
     birthday: Joi.date(),
-    image: Joi.string().required()
+    image: Joi.string()
 })
 
 
